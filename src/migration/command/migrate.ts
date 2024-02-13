@@ -8,7 +8,7 @@ async function migration(sqlQuery: string, version: number) {
     try {
         await db.query('BEGIN');
         await db.query(sqlQuery);
-        await db.none('INSERT INTO schema_migrations (version) VALUES ($1)', [version]);
+        await db.query('INSERT INTO schema_migrations (version) VALUES ($1)', [version]);
         await db.query('COMMIT');
     } catch (error) {
         await db.query('ROLLBACK');
