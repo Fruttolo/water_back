@@ -1,6 +1,6 @@
 import fs from 'fs';
 
-const filePath = '../myapp/src/migration/';
+const filePath = './src/migration/';
 const timestamp = Date.now();
 
 const fileName = filePath + `${timestamp}.sql`;

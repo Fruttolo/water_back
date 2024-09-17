@@ -6,9 +6,20 @@ import compression from 'compression';
 import cors from 'cors';
 import router from './router';
 import pgPromise from 'pg-promise';
+import * as sqlite3 from 'sqlite3';
+import { open } from 'sqlite';
+import WebSocketServer from './helpers/webSocketServer';
 
-const pgp = pgPromise({});
-export const db = pgp('postgres://postgres:gattino@localhost:5432/mydb');
+/* const pgp = pgPromise({});
+export const db = pgp('postgres://postgres:gattino@localhost:5432/mydb'); */
+
+// Initialize SQLite database
+const dbPromise = open({
+    filename: './mydb.sqlite',
+    driver: sqlite3.Database
+});
+
+export const db = dbPromise;
 
 const app = express();
 
@@ -28,4 +39,4 @@ server.listen(8080, () => {
 
 app.use('/', router());
 
-
+export const wss = new WebSocketServer(server);
