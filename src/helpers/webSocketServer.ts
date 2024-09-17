@@ -43,6 +43,13 @@ export default class WebSocketServer {
                 });
             });
             ws.on('close', () => {
+                for (const clientId in this.notAuthenticated) {
+                    if (this.notAuthenticated[clientId] === ws) {
+                        console.log(`Client disconnected: ${clientId}`);
+                        delete this.notAuthenticated[clientId];
+                        break;
+                    }
+                }
                 for (const clientId in this.clients) {
                     if (this.clients[clientId] === ws) {
                         console.log(`Client disconnected: ${clientId}`);
