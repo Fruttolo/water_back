@@ -4,19 +4,23 @@ import { checkCoffeeMachineToken, createCoffeeMachine, getCoffeeMachineByName } 
 export default class WebSocketServer {
     private wss: Server;
     private clients: any;
+    private notAuthenticated: any;
 
     constructor(server: any) {
         this.wss = new Server({ server });
         this.clients = {};
+        this.notAuthenticated = {};
         this.wss.on('connection', (ws) => {
+
+            console.log('Client connected');
 
             ws.on('message', (message) => {
 
                 try{
+                    console.log(`Received message: ${message}`);
                     JSON.parse(message.toString());
                 }catch(error){
                     console.error(`Error parsing message: ${error}`);
-                    ws.close();
                     return;
                 }
                 const parsedMessage = JSON.parse(message.toString());
@@ -27,7 +31,7 @@ export default class WebSocketServer {
                     if (!authenticated) {
                         console.log(`Client not authenticated: ${nome}`);
                         this.addCoffeeMachine(nome);
-                        ws.close();
+                        this.notAuthenticated[nome] = ws;
                     }
                     else{
                         console.log(`Client connected: ${nome}`);
@@ -36,7 +40,6 @@ export default class WebSocketServer {
                     }
                 }).catch((error) => {
                     console.error(`Authentication error: ${error}`);
-                    ws.close();
                 });
             });
             ws.on('close', () => {

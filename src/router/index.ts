@@ -10,5 +10,8 @@ export default (): express.Router => {
     authentication(router);
     user(router);
     coffemachine(router);
+    router.get('/hello', (req, res) => {
+        res.send('Hello, world!');
+    });
     return router;
 };
