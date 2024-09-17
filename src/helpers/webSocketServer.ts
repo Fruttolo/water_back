@@ -6,8 +6,8 @@ export default class WebSocketServer {
     private clients: any;
     private notAuthenticated: any;
 
-    constructor(server: any) {
-        this.wss = new Server({ server });
+    constructor() {
+        this.wss = new Server({ port: 8081 });
         this.clients = {};
         this.notAuthenticated = {};
         this.wss.on('connection', (ws) => {

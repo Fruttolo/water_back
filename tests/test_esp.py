@@ -5,7 +5,7 @@ accendi = False
 manopola = False
 secondi_aspettare = 20
 
-server_address = "ws://192.168.1.141:8080"
+server_address = "ws://localhost:8081"
 coffee_machine_id = "COFFEE_MACHINE_ID_2"
 coffee_machine_token = "COFFEE_MACHINE_TOKEN"
 
