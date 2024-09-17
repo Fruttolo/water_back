@@ -3,7 +3,8 @@ echo "Starting the backend"
 
 cd /home
 apt update
+apt instal -y curl
+curl -sL https://deb.nodesource.com/setup_20.x | bash -
 apt install -y nodejs
-apt install -y npm
 npm i
 node run migrate
