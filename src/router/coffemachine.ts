@@ -8,5 +8,5 @@ export default (router: express.Router) => {
     router.get('/coffemachine/accendi',isAuthenticated, accendi);
     router.get('/coffemachine/setsecondi',isAuthenticated, setSecondi);
     router.get('/coffemachine/spegni',isAuthenticated, spegni);
-    router.get('/coffemachine/associate',isAuthenticated, associate);
+    router.post('/coffemachine/associate',isAuthenticated, associate);
 };

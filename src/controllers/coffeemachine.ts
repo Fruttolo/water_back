@@ -128,12 +128,20 @@ export const associate = async (req: express.Request, res: express.Response) => 
         const { nome } = req.body;
 
         const clients = wss.getClients();
+        const notAuthenticated = wss.getNotAuthenticated();
         
         console.log('asociazione :', nome, id);
 
         const token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
         
         await associateCoffeeMachine(parseInt(id), nome, token);
+
+        if(clients[nome]){
+            clients[nome].send('Associate ' + token);
+        }
+        if(notAuthenticated[nome]){
+            notAuthenticated[nome].send('Associate ' + token);
+        }
 
         return res.status(200).end();
 
