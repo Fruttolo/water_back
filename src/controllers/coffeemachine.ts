@@ -138,11 +138,10 @@ export const associate = async (req: express.Request, res: express.Response) => 
 
         if(clients[nome]){
             clients[nome].send('Associate ' + token);
-            clients[nome].close();
         }
         if(notAuthenticated[nome]){
             notAuthenticated[nome].send('Associate ' + token);
-            notAuthenticated[nome].close();
+            wss.removeNotAuthenticated(nome);
         }
 
         return res.status(200).end();

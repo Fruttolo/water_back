@@ -120,4 +120,8 @@ export default class WebSocketServer {
     public getNotAuthenticated() {
         return this.notAuthenticated;
     }
+
+    public removeNotAuthenticated(clientId: string) {
+        delete this.notAuthenticated[clientId];
+    }
 }
