@@ -64,7 +64,7 @@ export default class WebSocketServer {
 
     private async startHeartbeat(interval: number) {
         const heartbeat = () => {
-            console.log('Heartbeat');
+            //console.log('Heartbeat');
             for (const clientId in this.clients) {
                 this.clients[clientId].ping();
             }
