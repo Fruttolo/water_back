@@ -62,15 +62,21 @@ export default class WebSocketServer {
         });
     }
 
-    private startHeartbeat(interval: number) {
-        setInterval(() => {
+    private async startHeartbeat(interval: number) {
+        const heartbeat = () => {
+            console.log('Heartbeat');
             for (const clientId in this.clients) {
                 this.clients[clientId].ping();
             }
             for (const clientId in this.notAuthenticated) {
                 this.notAuthenticated[clientId].ping();
             }
-        }, interval * 1000);
+        };
+
+        while (true) {
+            heartbeat();
+            await new Promise(resolve => setTimeout(resolve, interval * 1000));
+        }
     }
 
     private async authenticateClient(token: string, nome: string) {
