@@ -65,10 +65,10 @@ export default class WebSocketServer {
     private startHeartbeat(interval: number) {
         setInterval(() => {
             for (const clientId in this.clients) {
-                this.clients[clientId].send('ping');
+                this.clients[clientId].ping();
             }
             for (const clientId in this.notAuthenticated) {
-                this.notAuthenticated[clientId].send('ping');
+                this.notAuthenticated[clientId].ping();
             }
         }, interval * 1000);
     }
