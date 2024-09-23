@@ -18,6 +18,10 @@ export default class WebSocketServer {
 
             ws.on('message', (message) => {
 
+                if(message.toString() == 'Ping' || message.toString() == 'Pong'){
+                    return;
+                }
+
                 try{
                     console.log(`Received message: ${message}`);
                     JSON.parse(message.toString());
