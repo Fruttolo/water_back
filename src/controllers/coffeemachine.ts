@@ -151,3 +151,87 @@ export const associate = async (req: express.Request, res: express.Response) => 
         return res.sendStatus(400);
     }
 }
+
+export const man = async (req: express.Request, res: express.Response) => {
+    try{
+        const id  = get(req, 'identity.id') as string;
+
+        const coffeeMachines = await getCoffeeMachineByUserId(parseInt(id));
+
+        const clients = wss.getClients();
+
+        const state = parseInt(get(req, 'query.state') as string);
+        
+        forEach(coffeeMachines, (coffeeMachine, index) => {
+            if(clients[coffeeMachine.name]){
+                if(state){
+                    clients[coffeeMachine.name].send('MAN_ON');
+                }else{
+                    clients[coffeeMachine.name].send('MAN_OFF');
+                }
+            }
+        });
+
+        return res.status(200).end();
+
+    } catch (err) {
+        console.log(err);
+        return res.sendStatus(400);
+    }
+}
+
+export const acc = async (req: express.Request, res: express.Response) => {
+    try{
+        const id  = get(req, 'identity.id') as string;
+
+        const coffeeMachines = await getCoffeeMachineByUserId(parseInt(id));
+
+        const clients = wss.getClients();
+
+        const state  = get(req, 'state') as boolean;
+        
+        forEach(coffeeMachines, (coffeeMachine, index) => {
+            if(clients[coffeeMachine.name]){
+                if(state){
+                    clients[coffeeMachine.name].send('ACC_ON');
+                }else{
+                    clients[coffeeMachine.name].send('ACC_OFF');
+                }
+            }
+        });
+
+        return res.status(200).end();
+
+    } catch (err) {
+        console.log(err);
+        return res.sendStatus(400);
+    }
+}
+
+export const blu = async (req: express.Request, res: express.Response) => {
+    try{
+        const id  = get(req, 'identity.id') as string;
+
+        const coffeeMachines = await getCoffeeMachineByUserId(parseInt(id));
+
+        const clients = wss.getClients();
+
+        const state  = get(req, 'state') as boolean;
+        
+        forEach(coffeeMachines, (coffeeMachine, index) => {
+            if(clients[coffeeMachine.name]){
+                if(state){
+                    clients[coffeeMachine.name].send('BLU_ON');
+                }else{
+                    clients[coffeeMachine.name].send('BLU_OFF');
+                }
+            }
+        });
+
+        return res.status(200).end();
+
+    } catch (err) {
+        console.log(err);
+        return res.sendStatus(400);
+    }
+}

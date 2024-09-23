@@ -66,10 +66,10 @@ export default class WebSocketServer {
         const heartbeat = () => {
             //console.log('Heartbeat');
             for (const clientId in this.clients) {
-                this.clients[clientId].ping();
+                this.clients[clientId].send("Ping");
             }
             for (const clientId in this.notAuthenticated) {
-                this.notAuthenticated[clientId].ping();
+                this.notAuthenticated[clientId].send("Ping");
             }
         };
 
