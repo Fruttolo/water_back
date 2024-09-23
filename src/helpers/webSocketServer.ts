@@ -21,8 +21,7 @@ export default class WebSocketServer {
                 if(message.toString() == 'Ping' || message.toString() == 'Pong'){
                     for (const clientId in this.clients) {
                         if (this.clients[clientId] === ws) {
-                            /* console.log(`Received heartbeat: ${message} from ${clientId}`);
-                            console.log(`Sending heartbeat: Pong to ${clientId}`); */
+                            console.log(`Received heartbeat: ${message} from ${clientId}. Sending Pong.`);
                             ws.send('Pong');
                             return;
                         }

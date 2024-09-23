@@ -36,9 +36,9 @@ export const createUser = async (username: string, email: string, password: stri
     return db.run('INSERT INTO users(username, email, password, salt, session_token) VALUES(?, ?, ?, ?, ?)', username, email, password, salt, sessionToken);
 }
 
-export const updateUserById = async (id: number, username: string, email: string, password: string, salt: string, sessionToken: string) => {
+export const updateUserById = async (id: number, username: string, role: number) => {
     const db = await dbPromise;
-    return db.run('UPDATE users SET username = ?, email = ?, password = ?, salt = ?, session_token = ? WHERE id = ?', username, email, password, salt, sessionToken, id);
+    return db.run('UPDATE users SET username = ?, role = ? WHERE id = ?', username, role, id);
 }
 
 export const deleteUserById = async (id: number) => {
