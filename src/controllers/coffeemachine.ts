@@ -39,11 +39,13 @@ export const manopola = async (req: express.Request, res: express.Response) => {
         const coffeeMachines = await getCoffeeMachineByUserId(parseInt(id));
 
         const clients = wss.getClients();
+
+        const quantity = parseInt(get(req, 'query.quantity') as string);
         
         forEach(coffeeMachines, async (coffeeMachine, index) => {
             if(clients[coffeeMachine.name]){
-                console.log('send Manopola to client id:', coffeeMachine.name );
-                await giraManopola(clients[coffeeMachine.name], coffeeMachine.quantity);
+                console.log('send Manopola to client id:', coffeeMachine.name, 'quantity:', quantity ? quantity : coffeeMachine.quantity );
+                await giraManopola(clients[coffeeMachine.name], quantity ?  quantity : coffeeMachine.quantity);
             }
         });
 
