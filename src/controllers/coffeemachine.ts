@@ -13,14 +13,12 @@ export const makeCoffee = async (req: express.Request, res: express.Response) =>
 
         const seconds = parseInt(get(req, 'query.seconds') as string);
         
-        forEach(coffeeMachines, (coffeeMachine, index) => {
+        forEach(coffeeMachines, async (coffeeMachine, index) => {
             if(clients[coffeeMachine.name]){
-                console.log(seconds ? seconds : coffeeMachine.seconds);
-                console.log('send makeCoffe to client id:', coffeeMachine.name );
-                switchAccensione(clients[coffeeMachine.name]);
-                setTimeout(() => {
-                    giraManopola(clients[coffeeMachine.name], coffeeMachine.quantity);
-                }, seconds ? seconds : coffeeMachine.seconds * 1000);
+                console.log('send makeCoffe to client id:', coffeeMachine.name, 'waiting:', seconds ? seconds : coffeeMachine.seconds, 'quantity', coffeeMachine.quantity );
+                await switchAccensione(clients[coffeeMachine.name]);
+                await new Promise(resolve => setTimeout(resolve, seconds ? seconds * 1000 : coffeeMachine.seconds * 1000));
+                await giraManopola(clients[coffeeMachine.name], coffeeMachine.quantity);
             }
         });
 
@@ -40,10 +38,10 @@ export const manopola = async (req: express.Request, res: express.Response) => {
 
         const clients = wss.getClients();
         
-        forEach(coffeeMachines, (coffeeMachine, index) => {
+        forEach(coffeeMachines, async (coffeeMachine, index) => {
             if(clients[coffeeMachine.name]){
                 console.log('send Manopola to client id:', coffeeMachine.name );
-                giraManopola(clients[coffeeMachine.name], coffeeMachine.quantity);
+                await giraManopola(clients[coffeeMachine.name], coffeeMachine.quantity);
             }
         });
 
@@ -63,10 +61,10 @@ export const accendi = async (req: express.Request, res: express.Response) => {
 
         const clients = wss.getClients();
         
-        forEach(coffeeMachines, (coffeeMachine, index) => {
+        forEach(coffeeMachines, async (coffeeMachine, index) => {
             if(clients[coffeeMachine.name]){
                 console.log('send Accendi to client id:', coffeeMachine.name );
-                switchAccensione(clients[coffeeMachine.name]);
+                await switchAccensione(clients[coffeeMachine.name]);
             }
         });
 
@@ -111,7 +109,7 @@ export const spegni = async (req: express.Request, res: express.Response) => {
 
         const clients = wss.getClients();
         
-        forEach(coffeeMachines, (coffeeMachine, index) => {
+        forEach(coffeeMachines, async (coffeeMachine, index) => {
             if(clients[coffeeMachine.name]){
                 console.log('send Spegni to client id:', coffeeMachine.name );
                 switchAccensione(clients[coffeeMachine.name]);
