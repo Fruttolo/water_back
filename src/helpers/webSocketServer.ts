@@ -11,7 +11,7 @@ export default class WebSocketServer {
         this.wss = new Server({ port: 8081 });
         this.clients = {};
         this.notAuthenticated = {};
-        this.startHeartbeat(30);
+        //this.startHeartbeat(30);
         this.wss.on('connection', (ws) => {
 
             console.log('Client connected');
@@ -22,6 +22,8 @@ export default class WebSocketServer {
                     for (const clientId in this.clients) {
                         if (this.clients[clientId] === ws) {
                             console.log(`Received heartbeat: ${message} from ${clientId}`);
+                            console.log(`Sending heartbeat: Pong to ${clientId}`);
+                            ws.send('Pong');
                             return;
                         }
                     }
