@@ -1,2 +1,2 @@
 code .
-exit
+npm start

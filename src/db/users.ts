@@ -16,6 +16,11 @@ export const getUserByEmail = async (email: string) => {
     return db.get('SELECT * FROM users WHERE email = ?', email);
 }
 
+export const getUserByUsername = async (username: string) => {
+    const db = await dbPromise;
+    return db.get('SELECT * FROM users WHERE username = ?', username);
+}
+
 export const getUserBySessionToken = async (sessionToken: string) => {
     const db = await dbPromise;
     return db.get('SELECT * FROM users WHERE session_token = ?', sessionToken);

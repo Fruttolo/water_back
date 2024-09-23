@@ -9,6 +9,7 @@ import pgPromise from 'pg-promise';
 import * as sqlite3 from 'sqlite3';
 import { open } from 'sqlite';
 import WebSocketServer from './helpers/webSocketServer';
+import dotenv from 'dotenv';
 
 /* const pgp = pgPromise({});
 export const db = pgp('postgres://postgres:gattino@localhost:5432/mydb'); */
@@ -23,6 +24,8 @@ export const db = dbPromise;
 
 const app = express();
 
+dotenv.config();
+
 app.use(cors({
     credentials: true,
 }));
@@ -33,12 +36,10 @@ app.use(bodyParser.json());
 
 const server = http.createServer(app);
 
+export const wss = new WebSocketServer();
+
 server.listen(8080, () => {
     console.log('Server listening on port http://localhost:8080/');
 });
 
 app.use('/', router());
-
-
-
-export const wss = new WebSocketServer();

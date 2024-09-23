@@ -2,25 +2,10 @@ import express from 'express';
 import { forEach, get } from 'lodash';
 import { wss } from '../index';
 import { getCoffeeMachineByUserId, associateCoffeeMachine } from '../db/coffeemachines';
+import { random } from '../helpers/authHelper';
 
 export const makeCoffee = async (req: express.Request, res: express.Response) => {
     try{
-        /* const id  = get(req, 'identity.id') as string;
-
-        const coffeeMachines = await getCoffeeMachineByUserId(parseInt(id));
-
-        const clients = wss.getClients();
-
-        const seconds = parseInt(get(req, 'query.seconds') as string);
-        
-        forEach(coffeeMachines, async (coffeeMachine, index) => {
-            if(clients[coffeeMachine.name]){
-                console.log('send makeCoffe to client id:', coffeeMachine.name, 'waiting:', seconds ? seconds : coffeeMachine.seconds, 'quantity', coffeeMachine.quantity );
-                await switchAccensione(clients[coffeeMachine.name]);
-                await new Promise(resolve => setTimeout(resolve, seconds ? seconds * 1000 : coffeeMachine.seconds * 1000));
-                await giraManopola(clients[coffeeMachine.name], coffeeMachine.quantity);
-            }
-        }); */
 
         // DA CAMBIARE
 
@@ -34,7 +19,8 @@ export const makeCoffee = async (req: express.Request, res: express.Response) =>
 
 export const manopola = async (req: express.Request, res: express.Response) => {
     try{
-        const id  = get(req, 'identity.id') as string;
+        const user = get(req, 'identity');
+        const id = get(user, 'id');
 
         const coffeeMachines = await getCoffeeMachineByUserId(parseInt(id));
 
@@ -59,7 +45,8 @@ export const manopola = async (req: express.Request, res: express.Response) => {
 
 export const accendi = async (req: express.Request, res: express.Response) => {
     try{
-        const id  = get(req, 'identity.id') as string;
+        const user = get(req, 'identity');
+        const id = get(user, 'id');
 
         const coffeeMachines = await getCoffeeMachineByUserId(parseInt(id));
 
@@ -80,34 +67,10 @@ export const accendi = async (req: express.Request, res: express.Response) => {
     }
 }
 
-export const setSecondi = async (req: express.Request, res: express.Response) => {
-    try{
-        /* const id  = get(req, 'identity.id') as string;
-
-        const coffeeMachines = await getCoffeeMachineByUserId(parseInt(id));
-
-        const clients = wss.getClients();
-
-        forEach(coffeeMachines, (coffeeMachine, index) => {
-            if(clients[coffeeMachine.name]){
-                console.log('send SetSecondi', coffeeMachine.seconds,'to client id:', coffeeMachine.name );
-                clients[coffeeMachine.name].send(`SetSecondi ${coffeeMachine.seconds}`);
-            }
-        }); */
-
-        // DA CAMBIARE
-
-        return res.status(200).end();
-
-    } catch (err) {
-        console.log(err);
-        return res.sendStatus(400);
-    }
-}
-
 export const spegni = async (req: express.Request, res: express.Response) => {
     try{
-        const id  = get(req, 'identity.id') as string;
+        const user = get(req, 'identity');
+        const id = get(user, 'id');
 
         const coffeeMachines = await getCoffeeMachineByUserId(parseInt(id));
 
@@ -130,15 +93,20 @@ export const spegni = async (req: express.Request, res: express.Response) => {
 
 export const associate = async (req: express.Request, res: express.Response) => {
     try{
-        const id  = get(req, 'identity.id') as string;
+        const user = get(req, 'identity');
+        const id = get(user, 'id');
         const { nome } = req.body;
+
+        if(!nome){
+            return res.sendStatus(400).json({error: 'Nome non presente'});
+        }
 
         const clients = wss.getClients();
         const notAuthenticated = wss.getNotAuthenticated();
         
         console.log('asociazione :', nome, id);
 
-        const token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+        const token = random(32);
         
         await associateCoffeeMachine(parseInt(id), nome, token);
 
@@ -160,7 +128,8 @@ export const associate = async (req: express.Request, res: express.Response) => 
 
 export const man = async (req: express.Request, res: express.Response) => {
     try{
-        const id  = get(req, 'identity.id') as string;
+        const user = get(req, 'identity');
+        const id = get(user, 'id');
 
         const coffeeMachines = await getCoffeeMachineByUserId(parseInt(id));
 
@@ -188,7 +157,8 @@ export const man = async (req: express.Request, res: express.Response) => {
 
 export const acc = async (req: express.Request, res: express.Response) => {
     try{
-        const id  = get(req, 'identity.id') as string;
+        const user = get(req, 'identity');
+        const id = get(user, 'id');
 
         const coffeeMachines = await getCoffeeMachineByUserId(parseInt(id));
 
@@ -216,7 +186,8 @@ export const acc = async (req: express.Request, res: express.Response) => {
 
 export const blu = async (req: express.Request, res: express.Response) => {
     try{
-        const id  = get(req, 'identity.id') as string;
+        const user = get(req, 'identity');
+        const id = get(user, 'id');
 
         const coffeeMachines = await getCoffeeMachineByUserId(parseInt(id));
 
