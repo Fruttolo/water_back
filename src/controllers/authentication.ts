@@ -34,7 +34,7 @@ export const login = async (req: express.Request, res: express.Response) => {
         const session = authentication(salt, user.id.toString());
         const userId = user.id;
 
-        console.log(new Date(),'user logged in');
+        console.log(user.email,'user logged in');
         return res.status(200).json({ userId, session }).end();
         
     } catch (err) {

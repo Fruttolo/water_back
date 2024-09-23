@@ -10,15 +10,17 @@ export const makeCoffee = async (req: express.Request, res: express.Response) =>
         const coffeeMachines = await getCoffeeMachineByUserId(parseInt(id));
 
         const clients = wss.getClients();
+
+        const seconds = parseInt(get(req, 'query.seconds') as string);
         
         forEach(coffeeMachines, (coffeeMachine, index) => {
             if(clients[coffeeMachine.name]){
+                console.log(seconds ? seconds : coffeeMachine.seconds);
                 console.log('send makeCoffe to client id:', coffeeMachine.name );
-                clients[coffeeMachine.name].send('SetSecondi ' + coffeeMachine.quantity);
-                clients[coffeeMachine.name].send('Accendi');
+                switchAccensione(clients[coffeeMachine.name]);
                 setTimeout(() => {
-                    clients[coffeeMachine.name].send('Manopola');
-                }, coffeeMachine.seconds * 1000);
+                    giraManopola(clients[coffeeMachine.name], coffeeMachine.quantity);
+                }, seconds ? seconds : coffeeMachine.seconds * 1000);
             }
         });
 
@@ -41,7 +43,7 @@ export const manopola = async (req: express.Request, res: express.Response) => {
         forEach(coffeeMachines, (coffeeMachine, index) => {
             if(clients[coffeeMachine.name]){
                 console.log('send Manopola to client id:', coffeeMachine.name );
-                clients[coffeeMachine.name].send('Manopola');
+                giraManopola(clients[coffeeMachine.name], coffeeMachine.quantity);
             }
         });
 
@@ -64,7 +66,7 @@ export const accendi = async (req: express.Request, res: express.Response) => {
         forEach(coffeeMachines, (coffeeMachine, index) => {
             if(clients[coffeeMachine.name]){
                 console.log('send Accendi to client id:', coffeeMachine.name );
-                clients[coffeeMachine.name].send('Accendi');
+                switchAccensione(clients[coffeeMachine.name]);
             }
         });
 
@@ -78,7 +80,7 @@ export const accendi = async (req: express.Request, res: express.Response) => {
 
 export const setSecondi = async (req: express.Request, res: express.Response) => {
     try{
-        const id  = get(req, 'identity.id') as string;
+        /* const id  = get(req, 'identity.id') as string;
 
         const coffeeMachines = await getCoffeeMachineByUserId(parseInt(id));
 
@@ -89,7 +91,9 @@ export const setSecondi = async (req: express.Request, res: express.Response) =>
                 console.log('send SetSecondi', coffeeMachine.seconds,'to client id:', coffeeMachine.name );
                 clients[coffeeMachine.name].send(`SetSecondi ${coffeeMachine.seconds}`);
             }
-        });
+        }); */
+
+        // DA CAMBIARE
 
         return res.status(200).end();
 
@@ -110,7 +114,7 @@ export const spegni = async (req: express.Request, res: express.Response) => {
         forEach(coffeeMachines, (coffeeMachine, index) => {
             if(clients[coffeeMachine.name]){
                 console.log('send Spegni to client id:', coffeeMachine.name );
-                clients[coffeeMachine.name].send('Spegni');
+                switchAccensione(clients[coffeeMachine.name]);
             }
         });
 
@@ -234,4 +238,32 @@ export const blu = async (req: express.Request, res: express.Response) => {
         console.log(err);
         return res.sendStatus(400);
     }
+}
+
+const switchAccensione = async (client: any) => {
+    console.log('Sending ACC_ON');
+    client.send('ACC_ON');
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    console.log('Sending ACC_OFF');
+    client.send('ACC_OFF');
+}
+
+const giraManopola = async (client: any, q: number) => {
+    console.log('Sending BLU_ON');
+    client.send('BLU_ON');
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    console.log('Sending MAN_ON');
+    client.send('MAN_ON');
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    console.log('Sending ACC_ON');
+    client.send('ACC_ON');
+    await new Promise(resolve => setTimeout(resolve, q * 1000));
+    console.log('Sending ACC_OFF');
+    client.send('ACC_OFF');
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    console.log('Sending MAN_OFF');
+    client.send('MAN_OFF');
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    console.log('Sending BLU_OFF');
+    client.send('BLU_OFF');
 }
