@@ -5,7 +5,7 @@ import { getCoffeeMachineByUserId, associateCoffeeMachine } from '../db/coffeema
 
 export const makeCoffee = async (req: express.Request, res: express.Response) => {
     try{
-        const id  = get(req, 'identity.id') as string;
+        /* const id  = get(req, 'identity.id') as string;
 
         const coffeeMachines = await getCoffeeMachineByUserId(parseInt(id));
 
@@ -20,7 +20,9 @@ export const makeCoffee = async (req: express.Request, res: express.Response) =>
                 await new Promise(resolve => setTimeout(resolve, seconds ? seconds * 1000 : coffeeMachine.seconds * 1000));
                 await giraManopola(clients[coffeeMachine.name], coffeeMachine.quantity);
             }
-        });
+        }); */
+
+        // DA CAMBIARE
 
         return res.status(200).end();
 
