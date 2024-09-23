@@ -28,7 +28,7 @@ export const deleteUser = async (req: express.Request, res: express.Response) =>
 
         await deleteUserById(parseInt(id));
 
-        console.log(new Date(),'user deleted');
+        console.log(id,'user deleted');
         return res.status(200).end();
 
     } catch (err) {

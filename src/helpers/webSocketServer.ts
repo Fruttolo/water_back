@@ -19,6 +19,12 @@ export default class WebSocketServer {
             ws.on('message', (message) => {
 
                 if(message.toString() == 'Ping' || message.toString() == 'Pong'){
+                    for (const clientId in this.clients) {
+                        if (this.clients[clientId] === ws) {
+                            console.log(`Received heartbeat: ${message} from ${clientId}`);
+                            return;
+                        }
+                    }
                     return;
                 }
 

@@ -8,17 +8,17 @@ export const login = async (req: express.Request, res: express.Response) => {
         const { email, password } = req.body;
 
         if(!email || !password){
-            return res.sendStatus(400);
+            return res.status(400).send('Email o password mancante');
         }
 
         const user = await getUserByEmail(email);
 
         if(!user){
-            return res.sendStatus(400);
+            return res.status(400).send('Utente non trovato');
         }
 
         if(authentication(user.salt, password) !== user.password){
-            return res.sendStatus(403);
+            return res.status(403).send('Password errata');
         }
 
         const salt = random();
@@ -35,7 +35,7 @@ export const login = async (req: express.Request, res: express.Response) => {
         const userId = user.id;
 
         console.log(user.email,'user logged in');
-        return res.status(200).json({ userId, session }).end();
+        return res.status(200).json({ userId, session });
         
     } catch (err) {
         console.log(err);
@@ -46,7 +46,9 @@ export const login = async (req: express.Request, res: express.Response) => {
 export const check = async (req: express.Request, res: express.Response) => {
     try{
 
-        const session = req.headers.authorization?.split(' ')[1];
+        return res.status(200).send('ok');
+
+        /* const session = req.headers.authorization?.split(' ')[1];
 
         if(!session){
             console.log('no session');
@@ -61,7 +63,7 @@ export const check = async (req: express.Request, res: express.Response) => {
         }
 
         console.log(new Date(),'user checked');
-        return res.status(200).end();
+        return res.status(200).end(); */
         
     } catch (err) {
         console.log(err);
@@ -94,7 +96,7 @@ export const register = async (req: express.Request, res: express.Response) => {
             null,
         );
 
-        console.log(new Date(),'user registered');
+        console.log(email,'user registered');
         return res.status(200).end();
         
     } catch (err) {
