@@ -1,6 +1,6 @@
 import express from 'express';
 import { get } from 'lodash';
-import { deleteUserById, getUserById, updateUserById } from '../db/users';
+import { deleteUserById, getUserById, getUserByUsername, updateUserById } from '../db/users';
 
 export const deleteUser = async (req: express.Request, res: express.Response) => {
     try{
@@ -68,15 +68,39 @@ export const updateUser = async (req: express.Request, res: express.Response) =>
             return res.status(400).json({ error: 'Utente non esistente' });
         }
 
-        const { new_role } = req.body;
+        const { new_username } = req.body;
 
-        if(!new_role){
-            return res.status(400).json({ error: 'Nuovo username o ruolo non presente' });
+        if(!new_username){
+            return res.status(400).json({ error: 'Nuovo username non presente' });
         }
 
-        await updateUserById(parseInt(id), username, new_role);
+        await updateUserById(parseInt(id), new_username, checkUser.role);
 
         console.log(id, username,'user updated');
+        return res.status(200).end();
+
+    } catch (err) {
+        console.log(err);
+        return res.sendStatus(400);
+    }
+}
+
+export const makeAdmin = async (req: express.Request, res: express.Response) => {
+    try{
+
+        const { username } = req.body;
+
+        console.log(username,'make admin');
+
+        const checkUser = await getUserByUsername(username);
+
+        if(!checkUser){
+            return res.status(400).json({ error: 'Utente non esistente' });
+        }
+
+        await updateUserById(checkUser.id, checkUser.username, 1);
+
+        console.log(checkUser.id, checkUser.username,'user made admin');
         return res.status(200).end();
 
     } catch (err) {

@@ -1,6 +1,5 @@
 import express from 'express';
 import { getUserByEmail, createUser, updateUserById, getUserBySessionToken, getUserByUsername, getUserById} from '../db/users';
-import { random , authentication} from '../helpers';
 import { hashPassword, createJWT, readJWT } from '../helpers/authHelper';
 import { create, get } from 'lodash';
 

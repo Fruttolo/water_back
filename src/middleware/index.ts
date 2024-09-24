@@ -31,3 +31,25 @@ export const isAuthenticated = async (req: express.Request, res: express.Respons
         return res.sendStatus(400);
     }
 }
+
+export const isAdmin = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    try{
+        const user = get(req, 'identity');
+        const id = get(user, 'id');
+
+        const userDb = await getUserById(id);
+
+        if(!userDb){
+            return res.status(401).json({ error: 'Utente non esistente' });
+        }
+
+        if(userDb.role !== 1){
+            return res.status(401).json({ error: 'Utente non autorizzato' });
+        }
+
+        return next();
+    } catch (err) {
+        console.log(err); 
+        return res.sendStatus(400);
+    }
+}
