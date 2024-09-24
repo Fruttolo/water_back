@@ -10,6 +10,7 @@ import * as sqlite3 from 'sqlite3';
 import { open } from 'sqlite';
 import WebSocketServer from './helpers/webSocketServer';
 import dotenv from 'dotenv';
+import Scheduler from './helpers/cronjob';
 
 /* const pgp = pgPromise({});
 export const db = pgp('postgres://postgres:gattino@localhost:5432/mydb'); */
@@ -43,3 +44,5 @@ server.listen(8080, () => {
 });
 
 app.use('/', router());
+
+export const scheduler = new Scheduler();

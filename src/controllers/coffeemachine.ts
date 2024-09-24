@@ -1,8 +1,9 @@
 import express from 'express';
 import { forEach, get } from 'lodash';
-import { wss } from '../index';
+import { wss, scheduler } from '../index';
 import { getCoffeeMachineByUserId, associateCoffeeMachine } from '../db/coffeemachines';
 import { random } from '../helpers/authHelper';
+import { getJobsByUserId } from '../db/jobs';
 
 export const makeCoffee = async (req: express.Request, res: express.Response) => {
     try{
@@ -84,6 +85,90 @@ export const spegni = async (req: express.Request, res: express.Response) => {
         });
 
         return res.status(200).end();
+
+    } catch (err) {
+        console.log(err);
+        return res.sendStatus(400);
+    }
+}
+
+export const scheduleJob = async (req: express.Request, res: express.Response) => {
+    try{
+        const user = get(req, 'identity');
+        const id = get(user, 'id');
+
+        const coffeeMachines = await getCoffeeMachineByUserId(parseInt(id));
+
+        forEach(coffeeMachines, (coffeeMachine, index) => {
+            const client = wss.getClient(coffeeMachine.name);
+            if(client){
+                // time: every 'second minute hour dayOfMonth month dayOfWeek' 'every 10 seconds' => '*/10 * * * * *'
+                // every sunday and wednesday at 10:30 => '30 10 * * 0,3'
+                const { time, quantity } = req.body; 
+                if (!time) {
+                    res.status(400).json({ error: 'Invalid or missing time format' });
+                    return;
+                }
+                const job = {
+                    functionToCall: async () => {
+                        await faiCaffe(client, coffeeMachine.seconds, quantity ? quantity : coffeeMachine.quantity);
+                    },
+                    coffeeMachineId: coffeeMachine.id,
+                    userId: id,
+                    quantity: quantity ? quantity : coffeeMachine.quantity,
+                    seconds: coffeeMachine.seconds
+                }
+                scheduler.scheduleJob(time, job);
+            }
+        });
+
+        return res.status(200).end();
+
+    } catch (err) {
+        console.log(err);
+        return res.sendStatus(400);
+    }
+}
+
+export const deleteJob = async (req: express.Request, res: express.Response) => {
+    try{
+        const user = get(req, 'identity');
+        const id = get(user, 'id');
+        const { job_id } = req.params;
+
+        if(!job_id){
+            return res.status(400).json({error: 'job_id non presente'});
+        }
+
+        const jobs = await getJobsByUserId(parseInt(id));
+        if(!jobs){
+            return res.status(400).json({error: 'jobs non presenti'});
+        }
+
+        const myjob = jobs.find((j) => j.id === parseInt(job_id));
+
+        if(!myjob){
+            return res.status(400).json({error: 'job non presente'});
+        }
+
+        scheduler.deleteJob(parseInt(myjob.id));
+
+        return res.status(200).end();
+
+    } catch (err) {
+        console.log(err);
+        return res.sendStatus(400);
+    }
+}
+
+export const getJobs = async (req: express.Request, res: express.Response) => {
+    try{
+        const user = get(req, 'identity');
+        const id = get(user, 'id');
+
+        const jobs = await getJobsByUserId(parseInt(id));
+
+        return res.status(200).json(jobs);
 
     } catch (err) {
         console.log(err);
@@ -239,4 +324,12 @@ const giraManopola = async (client: any, q: number) => {
     await new Promise(resolve => setTimeout(resolve, 1000));
     console.log('Sending BLU_OFF');
     client.send('BLU_OFF');
+}
+
+export const faiCaffe = async (client: any, waiting: number, quantity: number) => {
+    console.log('faiCaffe Accensione');
+    await switchAccensione(client);
+    await new Promise(resolve => setTimeout(resolve, waiting * 1000));
+    console.log('faiCaffe Manopola');
+    await giraManopola(client, quantity);
 }
