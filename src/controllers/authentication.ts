@@ -102,11 +102,11 @@ export const refresh = async (req: express.Request, res: express.Response) => {
             return res.status(400).json({ error: 'Utente non esistente' });
         }
 
-        const access_token = createJWT(user, '1h');
+        const new_access_token = createJWT(user, '1h');
         const new_refresh_token = createJWT(user_id, '7d');
 
         console.log(user.username,'user refreshed');
-        return res.status(200).json({ access_token, new_refresh_token });
+        return res.status(200).json({ new_access_token, new_refresh_token });
         
     } catch (err) {
         console.log(err);
