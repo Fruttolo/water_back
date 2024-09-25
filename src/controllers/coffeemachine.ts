@@ -8,7 +8,22 @@ import { getJobsByUserId } from '../db/jobs';
 export const makeCoffee = async (req: express.Request, res: express.Response) => {
     try{
 
-        // DA CAMBIARE
+        const user = get(req, 'identity');
+        const id = get(user, 'id');
+
+        const coffeeMachines = await getCoffeeMachineByUserId(parseInt(id));
+
+        const clients = wss.getClients();
+
+        const quantity = parseInt(get(req, 'query.quantity') as string);
+        
+        forEach(coffeeMachines, async (coffeeMachine, index) => {
+            if(clients[coffeeMachine.name]){
+                console.log('send FaiCaffe to client id:', coffeeMachine.name, 'quantity:', quantity ? quantity : coffeeMachine.quantity );
+                await faiCaffe(clients[coffeeMachine.name], coffeeMachine.seconds, quantity ? quantity : coffeeMachine.quantity);
+            }
+        });
+
 
         return res.status(200).end();
 
