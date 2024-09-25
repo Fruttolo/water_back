@@ -5,7 +5,6 @@ import cookieParser from 'cookie-parser';
 import compression from 'compression';
 import cors from 'cors';
 import router from './router';
-import pgPromise from 'pg-promise';
 import * as sqlite3 from 'sqlite3';
 import { open } from 'sqlite';
 import WebSocketServer from './helpers/webSocketServer';
@@ -46,3 +45,7 @@ server.listen(8080, () => {
 app.use('/', router());
 
 export const scheduler = new Scheduler();
+console.log('Current time:', new Date().toLocaleString());
+scheduler.scheduleJob('*/10 * * * * *', { functionToCall: () => {
+    console.log('Job executed:', new Date().toLocaleString());
+}});
