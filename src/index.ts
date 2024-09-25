@@ -46,6 +46,3 @@ app.use('/', router());
 
 export const scheduler = new Scheduler();
 console.log('Current time:', new Date().toLocaleString());
-scheduler.scheduleJob('*/10 * * * * *', { functionToCall: () => {
-    console.log('Job executed:', new Date().toLocaleString());
-}});
