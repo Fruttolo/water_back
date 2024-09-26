@@ -114,19 +114,20 @@ export const scheduleJob = async (req: express.Request, res: express.Response) =
 
         const coffeeMachines = await getCoffeeMachineByUserId(parseInt(id));
 
+        const { time, quantity } = req.body; 
+        if (!time) {
+            res.status(400).json({ error: 'Invalid or missing time format' });
+            return;
+        }
         forEach(coffeeMachines, (coffeeMachine, index) => {
-            const client = wss.getClient(coffeeMachine.name);
-            if(client){
                 // time: every 'second minute hour dayOfMonth month dayOfWeek' 'every 10 seconds' => '*/10 * * * * *'
                 // every sunday and wednesday at 10:30 => '30 10 * * 0,3'
-                const { time, quantity } = req.body; 
-                if (!time) {
-                    res.status(400).json({ error: 'Invalid or missing time format' });
-                    return;
-                }
                 const job = {
                     functionToCall: async () => {
-                        await faiCaffe(client, coffeeMachine.seconds, quantity ? quantity : coffeeMachine.quantity);
+                        const client = wss.getClient(coffeeMachine.name);
+                        if(client){
+                            await faiCaffe(client, coffeeMachine.seconds, quantity ? quantity : coffeeMachine.quantity);
+                        }
                     },
                     coffeeMachineId: coffeeMachine.id,
                     userId: id,
@@ -134,7 +135,6 @@ export const scheduleJob = async (req: express.Request, res: express.Response) =
                     seconds: coffeeMachine.seconds
                 }
                 scheduler.scheduleJob(time, job);
-            }
         });
 
         return res.status(200).end();

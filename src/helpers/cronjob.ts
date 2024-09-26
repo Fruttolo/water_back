@@ -22,9 +22,11 @@ export default class Scheduler {
             const time = job.time;
             const quantity = job.quantity;
             const seconds = job.seconds;
-            const clients = wss.getClients();
             const functionToCall = async () => {
-                    await faiCaffe(clients[coffeeMachine.name], seconds, quantity);
+                const client = wss.getClient(coffeeMachine.name);
+                if(client){
+                    await faiCaffe(client, seconds ? seconds : coffeeMachine.seconds, quantity ? quantity : coffeeMachine.quantity);
+                }
             }
             console.log('Job loaded:', coffeeMachine.name, time);
             const J = schedule.scheduleJob(time, functionToCall);
